@@ -46,7 +46,7 @@
     <div class="sticky top-0 z-50 w-full bg-[#f4e8e1] shadow-sm border-b border-[#e2d3c8]">
         <div class="max-w-md mx-auto px-4 py-2.5 text-center font-serif text-[#5c524c]">
             <p class="text-[11px] md:text-xs leading-relaxed mb-2 font-medium tracking-wide">
-                <span class="font-bold text-[#8b6f5c]">📍 TOP寄賣店限定</span>｜現場僅提供 5ml & 10ml 裝<br>
+                <span class="font-bold text-[#8b6f5c]">📍 寄賣店限定</span>｜現場僅提供 5ml & 10ml 裝<br>
                 購買 30ml 或以上容量：
             </p>
             <div class="flex gap-2 justify-center items-center">
@@ -70,10 +70,28 @@
 
     <!-- 搜尋與過濾區塊 -->
     <section class="max-w-lg mx-auto px-4 mb-8">
-        <div class="relative mb-4">
-            <input type="text" id="searchInput" placeholder="搜尋香水名稱..." class="w-full px-5 py-3 pl-11 rounded-full border border-[#e2d3c8] bg-white focus:outline-none focus:ring-2 focus:ring-[#c7a47a] text-sm font-sans transition-all shadow-sm">
+        <div class="relative mb-3">
+            <input type="text" id="searchInput" placeholder="搜尋香水名稱或任何香調..." class="w-full px-5 py-3 pl-11 rounded-full border border-[#e2d3c8] bg-white focus:outline-none focus:ring-2 focus:ring-[#c7a47a] text-sm font-sans transition-all shadow-sm">
             <svg class="absolute left-4 top-3.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </div>
+
+        <!-- 熱門香調快速篩選標籤 -->
+        <div class="mb-4">
+            <p class="text-[11px] text-gray-500 font-serif mb-1.5 px-1">🌿 熱門香調快速篩選：</p>
+            <div id="note-tags-container" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
+                <button class="note-tag-btn px-2.5 py-1 rounded-full text-xs bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] transition-all" data-note="">全部香調</button>
+                <button class="note-tag-btn px-2.5 py-1 rounded-full text-xs bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] transition-all" data-note="佛手柑">佛手柑</button>
+                <button class="note-tag-btn px-2.5 py-1 rounded-full text-xs bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] transition-all" data-note="伯爵茶">伯爵茶</button>
+                <button class="note-tag-btn px-2.5 py-1 rounded-full text-xs bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] transition-all" data-note="白麝香">白麝香</button>
+                <button class="note-tag-btn px-2.5 py-1 rounded-full text-xs bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] transition-all" data-note="琥珀">琥珀</button>
+                <button class="note-tag-btn px-2.5 py-1 rounded-full text-xs bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] transition-all" data-note="檀木">檀木</button>
+                <button class="note-tag-btn px-2.5 py-1 rounded-full text-xs bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] transition-all" data-note="茉莉">茉莉</button>
+                <button class="note-tag-btn px-2.5 py-1 rounded-full text-xs bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] transition-all" data-note="雪松">雪松</button>
+                <button class="note-tag-btn px-2.5 py-1 rounded-full text-xs bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] transition-all" data-note="雲呢拿">雲呢拿</button>
+                <button class="note-tag-btn px-2.5 py-1 rounded-full text-xs bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] transition-all" data-note="海洋">海洋</button>
+            </div>
+        </div>
+
         <div class="flex gap-2 justify-center font-serif text-xs md:text-sm">
             <button class="filter-btn active px-3 md:px-4 py-2 rounded-full bg-[#8b6f5c] text-white transition-all shadow-sm" data-category="all">全部</button>
             <button class="filter-btn px-3 md:px-4 py-2 rounded-full bg-white text-[#8b6f5c] border border-[#e2d3c8] hover:bg-[#f4e8e1] hover:border-[#8b6f5c] transition-all shadow-sm" data-category="emotion">情緒香水</button>
@@ -223,22 +241,29 @@
             const container = document.getElementById('catalog-container');
             const searchInput = document.getElementById('searchInput');
             const filterBtns = document.querySelectorAll('.filter-btn');
+            const noteTagBtns = document.querySelectorAll('.note-tag-btn');
             
             let currentCategory = 'all';
             let currentSearchTerm = '';
+            let currentNoteFilter = '';
 
             function renderPerfumes() {
                 container.innerHTML = '';
                 
                 const filtered = perfumes.filter(perfume => {
                     const matchesCategory = currentCategory === 'all' || perfume.category === currentCategory;
+                    
                     const searchStr = `${perfume.name} ${perfume.top} ${perfume.mid} ${perfume.base}`.toLowerCase();
                     const matchesSearch = searchStr.includes(currentSearchTerm.toLowerCase());
-                    return matchesCategory && matchesSearch;
+                    
+                    const noteStr = `${perfume.top} ${perfume.mid} ${perfume.base}`;
+                    const matchesNote = currentNoteFilter === '' || noteStr.includes(currentNoteFilter);
+
+                    return matchesCategory && matchesSearch && matchesNote;
                 });
 
                 if (filtered.length === 0) {
-                    container.innerHTML = '<div class="text-center py-10 text-gray-400 font-serif">找不到符合的香水...</div>';
+                    container.innerHTML = '<div class="col-span-2 text-center py-12 text-gray-400 font-serif">找不到符合條件的香水，請嘗試其他關鍵字或香調...</div>';
                     return;
                 }
 
@@ -290,15 +315,30 @@
                 });
             }
 
-            // 事件監聽器
+            // 事件監聽器：文字搜尋
             searchInput.addEventListener('input', (e) => {
                 currentSearchTerm = e.target.value;
                 renderPerfumes();
             });
 
+            // 事件監聽器：香調標籤快速篩選
+            noteTagBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    noteTagBtns.forEach(b => {
+                        b.classList.remove('bg-[#8b6f5c]', 'text-white');
+                        b.classList.add('bg-white', 'text-[#8b6f5c]', 'border', 'border-[#e2d3c8]');
+                    });
+                    e.target.classList.remove('bg-white', 'text-[#8b6f5c]', 'border', 'border-[#e2d3c8]');
+                    e.target.classList.add('bg-[#8b6f5c]', 'text-white');
+
+                    currentNoteFilter = e.target.dataset.note;
+                    renderPerfumes();
+                });
+            });
+
+            // 事件監聽器：分類切換
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    // 更新按鈕樣式
                     filterBtns.forEach(b => {
                         b.classList.remove('bg-[#8b6f5c]', 'text-white');
                         b.classList.add('bg-white', 'text-[#8b6f5c]', 'border', 'border-[#e2d3c8]');
@@ -307,7 +347,6 @@
                     e.target.classList.remove('bg-white', 'text-[#8b6f5c]', 'border', 'border-[#e2d3c8]');
                     e.target.classList.add('bg-[#8b6f5c]', 'text-white');
 
-                    // 更新分類並渲染
                     currentCategory = e.target.dataset.category;
                     renderPerfumes();
                 });
